@@ -1,4 +1,4 @@
-name: Secure Weather App CI
+name: Weather App Production Check
 
 on:
   push:
@@ -7,29 +7,45 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
-        node-version: [18, 20]
+        node-version: [18.x, 20.x]
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Display Node Version
-        run: node -v
-
       - name: Install Dependencies
         run: npm install
 
-      - name: Run Secure Weather App
-        run: npm start
+      - name: Run Unit Tests
+        run: node test.js
         env:
           WEATHER_API_KEY: ${{ secrets.WEATHER_API_KEY }}
+
+      - name: Run Security Check
+        run: node app.js
+        env:
+          WEATHER_API_KEY: ${{ secrets.WEATHER_API_KEY }}
+
+  package:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create Build Artifact
+        run: zip -r weather-app-dist.zip . -x "*.git*"
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: weather-app-dist
+          path: weather-app-dist.zip
