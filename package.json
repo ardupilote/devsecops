@@ -1,7 +1,7 @@
 {
   "name": "weather-app",
   "version": "1.0.0",
-  "main": "test.js",
+  "main": "app.js",
   "scripts": {
     "test": "node test.js",
     "start": "node app.js"
