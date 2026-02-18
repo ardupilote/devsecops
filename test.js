@@ -1,8 +1,6 @@
-const apiKey = process.env.WEATHER_API_KEY;
-
-if (!apiKey) {
-  console.error("CRITICAL ERROR: No API Key found!");
+if (!process.env.WEATHER_API_KEY) {
+  console.error("Test Failed: WEATHER_API_KEY is missing!");
   process.exit(1);
 }
 
-console.log("App is running securely.");
+console.log("All tests passed! WEATHER_API_KEY is set.");
